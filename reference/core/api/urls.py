@@ -1,15 +1,13 @@
-from django.conf.urls import url
-from django.urls import include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
 from . import views
 
-router = DefaultRouter()
-router.register(r'Board', views.BoardViewSet)
-router.register(r'Component', views.ComponentViewSet)
-router.register(r'Card', views.CardViewSet)
-
 app_name = 'core-api'
 urlpatterns = [
-    url('', include(router.urls))
+    path('users/', views.UserList.as_view(), name='user-list'),
+    path('users/<int:pk>/', views.UserDetail.as_view(), name='user-detail'),
+    path('boards/', views.BoardList.as_view(), name='board-list'),
+    path('boards/<int:pk>/', views.BoardDetail.as_view(), name='board-detail'),
+    path('cards/', views.CardList.as_view(), name='card-list'),
+    path('cards/<int:pk>/', views.CardDetail.as_view(), name='card-detail'),
 ]
