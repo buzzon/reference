@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.generics import get_object_or_404
 
 from core.api.serializers import *
 from core.models import *
@@ -15,6 +16,10 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    def get_object(self):
+        username = self.kwargs.get('username')
+        return get_object_or_404(User, username=username)
 
 
 class BoardList(generics.ListCreateAPIView):

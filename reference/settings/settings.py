@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 from settings.parameters import ParametersContainer
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -130,4 +133,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ]
+}
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: reverse('core-api:user-detail', args=[str(u.username)]),
 }

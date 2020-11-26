@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Board(models.Model):
@@ -8,6 +9,12 @@ class Board(models.Model):
 
     class Meta:
         ordering = ['created']
+
+    def get_absolute_url(self):
+        return reverse('core-api:board-detail', args=[str(self.id)])
+
+    def __str__(self):
+        return self.title
 
 
 class Card(models.Model):
@@ -24,6 +31,12 @@ class Card(models.Model):
     class Meta:
         ordering = ['updated']
 
+    def get_absolute_url(self):
+        return reverse('core-api:card-detail', args=[str(self.id)])
+
+    def __str__(self):
+        return self.title
+
 
 class Component(models.Model):
     title = models.CharField(max_length=256)
@@ -38,3 +51,9 @@ class Component(models.Model):
 
     class Meta:
         ordering = ['ordering', 'updated']
+
+    def get_absolute_url(self):
+        return reverse('core-api:card-detail', args=[str(self.id)])
+
+    def __str__(self):
+        return self.title

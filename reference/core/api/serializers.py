@@ -5,13 +5,17 @@ from core.models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
+    url = serializers.URLField(source='get_absolute_url', read_only=True)
     boards = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='core-api:board-detail')
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password', 'boards']
+        fields = ['url', 'username', 'email', 'first_name', 'last_name', 'password', 'boards']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'username': {'write_only': True},
+            'password': {'write_only': True},
+            'first_name': {'required': False},
+            'last_name': {'required': False}
         }
 
 
@@ -27,9 +31,20 @@ class CardSerializer(serializers.ModelSerializer):
         }
 
 
+class CardFromBoardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Card
+        fields = ['id', 'title', 'description', 'deadline', 'preliminaryTime', 'totalTime', 'updated',
+                  'positionX', 'positionY']
+        extra_kwargs = {
+            'id': {'read_only': False, 'required': False}
+        }
+
+
 class BoardSerializer(serializers.ModelSerializer):
-    owner = serializers.HyperlinkedRelatedField(read_only=True, view_name='core-api:user-detail')
-    cards = CardSerializer(required=False, many=True)
+    owner = serializers.HyperlinkedRelatedField(read_only=True, view_name='core-api:user-detail',
+                                                lookup_field='username', lookup_url_kwarg='username')
+    cards = CardFromBoardSerializer(required=False, many=True)
 
     class Meta:
         model = Board
