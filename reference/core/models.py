@@ -17,10 +17,10 @@ class Board(models.Model):
     def save(self, *args, **kwargs):
         pref_slug = rand_slug()
         try:
-            while Board.objects.all().get(slug=pref_slug + "-" + slugify(self.title)):
+            while Board.objects.all().get(slug=pref_slug + slugify(self.title)):
                 pref_slug = rand_slug()
         except Board.DoesNotExist:
-            self.slug = slugify(pref_slug + "-" + self.title)
+            self.slug = slugify(pref_slug + self.title)
         super(Board, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
