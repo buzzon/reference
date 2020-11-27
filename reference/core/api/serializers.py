@@ -97,7 +97,7 @@ class BoardSerializer(serializers.ModelSerializer):
                 )
             else:
                 Card.objects.create(board=instance, **card)
-
+        instance.save()
         return instance
 
 
