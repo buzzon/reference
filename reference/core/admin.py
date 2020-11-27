@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import *
+
+
+class BoardAdmin(admin.ModelAdmin):
+    list_display = ('title', 'owner', 'created')
+
+
+admin.site.register(Board, BoardAdmin)
