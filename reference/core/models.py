@@ -1,4 +1,7 @@
+import json
+
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.urls import reverse
 
 
@@ -11,7 +14,14 @@ class Board(models.Model):
         ordering = ['created']
 
     def get_absolute_url(self):
-        return reverse('core-api:board-detail', args=[str(self.id)])
+        return reverse('core-api:board-detail', args=[str(self.id), slugify(str(self.title))])
+
+    def get_absolute_url_serialize(self):
+        url = reverse('core-api:board-detail', args=[str(self.id), slugify(str(self.title))])
+        return json.loads(f'"url":"{url}"')
+
+    def get_owner_absolute_url(self):
+        return self.owner.get_absolute_url()
 
     def __str__(self):
         return self.title

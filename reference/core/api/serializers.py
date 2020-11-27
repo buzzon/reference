@@ -6,17 +6,40 @@ from core.models import *
 
 class UserSerializer(serializers.ModelSerializer):
     url = serializers.URLField(source='get_absolute_url', read_only=True)
-    boards = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='core-api:board-detail')
+    boards = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ['url', 'username', 'email', 'first_name', 'last_name', 'password', 'boards']
         extra_kwargs = {
-            'username': {'write_only': True},
             'password': {'write_only': True},
             'first_name': {'required': False},
             'last_name': {'required': False}
         }
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        password = validated_data.pop('password')
+        instance.set_password(password)
+        instance.save()
+        return instance
+
+    @staticmethod
+    def get_boards(obj):
+        boards_url = []
+        for board in Board.objects.filter(owner=obj.id):
+            boards_url.append(board.get_absolute_url())
+        return boards_url
 
 
 class CardSerializer(serializers.ModelSerializer):
@@ -42,19 +65,19 @@ class CardFromBoardSerializer(serializers.ModelSerializer):
 
 
 class BoardSerializer(serializers.ModelSerializer):
-    owner = serializers.HyperlinkedRelatedField(read_only=True, view_name='core-api:user-detail',
-                                                lookup_field='username', lookup_url_kwarg='username')
+    url = serializers.URLField(source='get_absolute_url', read_only=True)
+    owner = serializers.URLField(source='get_owner_absolute_url', read_only=True)
     cards = CardFromBoardSerializer(required=False, many=True)
 
     class Meta:
         model = Board
-        fields = ['id', 'title', 'created', 'owner', 'cards']
+        fields = ['url', 'title', 'created', 'owner', 'cards']
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
     def create(self, validated_data):
-        cards_data = validated_data.pop('cards')
+        cards_data = validated_data.pop('cards', [])
         board = Board.objects.create(**validated_data)
         for card in cards_data:
             Card.objects.create(board=board, **card)
