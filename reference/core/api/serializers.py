@@ -43,18 +43,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CardSerializer(serializers.ModelSerializer):
-    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all(), write_only=True)
-
-    class Meta:
-        model = Card
-        fields = ['id', 'title', 'description', 'deadline', 'preliminaryTime', 'totalTime', 'updated',
-                  'positionX', 'positionY', 'board']
-        extra_kwargs = {
-            'id': {'read_only': False, 'required': False}
-        }
-
-
-class CardFromBoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
         fields = ['id', 'title', 'description', 'deadline', 'preliminaryTime', 'totalTime', 'updated',
@@ -67,14 +55,11 @@ class CardFromBoardSerializer(serializers.ModelSerializer):
 class BoardSerializer(serializers.ModelSerializer):
     url = serializers.URLField(source='get_absolute_url', read_only=True)
     owner = serializers.URLField(source='get_owner_absolute_url', read_only=True)
-    cards = CardFromBoardSerializer(required=False, many=True)
+    cards = CardSerializer(required=False, many=True)
 
     class Meta:
         model = Board
-        fields = ['url', 'title', 'created', 'owner', 'cards']
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        fields = ['url', 'title', 'owner', 'created', 'cards']
 
     def create(self, validated_data):
         cards_data = validated_data.pop('cards', [])

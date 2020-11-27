@@ -18,8 +18,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get_object(self):
-        username = self.kwargs.get('username')
-        return get_object_or_404(User, username=username)
+        return get_object_or_404(User, username=self.request.user.username)
 
 
 class BoardList(generics.ListCreateAPIView):
@@ -37,6 +36,9 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Board.objects.all().filter(owner=self.request.user)
+
+    def get_object(self):
+        return get_object_or_404(Board, slug=self.kwargs.get('slug'))
 
 
 class CardList(generics.ListCreateAPIView):

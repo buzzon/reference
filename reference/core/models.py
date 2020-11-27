@@ -1,24 +1,30 @@
-import json
-
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.urls import reverse
+from django.utils.text import slugify
+
+from core.utility import rand_slug
 
 
 class Board(models.Model):
     title = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=255, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('auth.User', related_name='boards', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['created']
 
-    def get_absolute_url(self):
-        return reverse('core-api:board-detail', args=[str(self.id), slugify(str(self.title))])
+    def save(self, *args, **kwargs):
+        pref_slug = rand_slug()
+        try:
+            while Board.objects.all().get(slug=pref_slug + "-" + slugify(self.title)):
+                pref_slug = rand_slug()
+        except Board.DoesNotExist:
+            self.slug = slugify(pref_slug + "-" + self.title)
+        super(Board, self).save(*args, **kwargs)
 
-    def get_absolute_url_serialize(self):
-        url = reverse('core-api:board-detail', args=[str(self.id), slugify(str(self.title))])
-        return json.loads(f'"url":"{url}"')
+    def get_absolute_url(self):
+        return reverse('core-api:board-detail', kwargs={'slug': self.slug})
 
     def get_owner_absolute_url(self):
         return self.owner.get_absolute_url()
