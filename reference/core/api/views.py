@@ -23,16 +23,20 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BoardList(generics.ListCreateAPIView):
-    queryset = Board.objects.all()
     serializer_class = BoardSerializer
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    def get_queryset(self):
+        return Board.objects.all().filter(owner=self.request.user)
+
 
 class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Board.objects.all()
     serializer_class = BoardSerializer
+
+    def get_queryset(self):
+        return Board.objects.all().filter(owner=self.request.user)
 
 
 class CardList(generics.ListCreateAPIView):
