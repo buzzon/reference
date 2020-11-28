@@ -1,0 +1,28 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Reference Home</h1>
+<p>\(*-*)/</p>
+<h2>Global content</h2>
+<p>The database has the following record counts:</p>
+<ul>
+  <li><strong>Users:</strong> {{ num_users }} </li>
+  <li><strong>Boards:</strong> {{ num_boards }} </li>
+  <li><strong>Cards:</strong> {{ num_cards }} </li>
+  <li><strong>Components:</strong> {{ num_components }} </li>
+</ul>
+<h2>User content</h2>
+{% if board_list %}
+<p>The following boards are available for the user:</p>
+<ul>
+  {% for board in board_list %}
+  <li>
+    <a href="{{ board.get_absolute_url }}"><strong>{{ board.title }}</strong></a> --//--
+    <a href="{{ board.get_absolute_api_url }}">api</a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>Need authorization</p>
+{% endif %}
+{% endblock %}

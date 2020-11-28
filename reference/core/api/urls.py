@@ -4,10 +4,8 @@ from . import views
 
 app_name = 'core-api'
 urlpatterns = [
-    path('users/', views.UserList.as_view(), name='user-list'),
-    path('users/<str:username>/', views.UserDetail.as_view(), name='user-detail'),
-    path('boards/', views.BoardList.as_view(), name='board-list'),
-    path('boards/<slug:slug>/', views.BoardDetail.as_view(), name='board-detail'),
-    # path('cards/', views.CardList.as_view(), name='card-list'),
-    # path('cards/<int:pk>/', views.CardDetail.as_view(), name='card-detail'),
+    path('user/', views.UserList.as_view(), name='user-list'),
+    path('user/<str:username>/', views.UserDetail.as_view(), name='user-detail'),
+    path('board/', views.BoardList.as_view(), name='board-list'),
+    path('board/<slug:slug>/', views.BoardDetail.as_view(), name='board-detail')
 ]

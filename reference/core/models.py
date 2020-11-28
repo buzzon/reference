@@ -24,6 +24,9 @@ class Board(models.Model):
         super(Board, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
+        return reverse('core:board-detail', kwargs={'slug': self.slug})
+
+    def get_absolute_api_url(self):
         return reverse('core-api:board-detail', kwargs={'slug': self.slug})
 
     def get_owner_absolute_url(self):
