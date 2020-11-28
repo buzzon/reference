@@ -18,7 +18,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get_object(self):
-        return get_object_or_404(User, username=self.request.user.username)
+        return get_object_or_404(User, username=self.kwargs.get('username'))
 
 
 class BoardList(generics.ListCreateAPIView):
