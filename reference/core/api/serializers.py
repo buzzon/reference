@@ -4,9 +4,20 @@ from rest_framework import serializers
 from core.models import *
 
 
+class BoardForUserSerializer(serializers.ModelSerializer):
+    url = serializers.URLField(source='get_absolute_url', read_only=True)
+
+    class Meta:
+        model = Board
+        fields = ['id', 'title', 'url']
+        extra_kwargs = {
+            'id': {'read_only': False}
+        }
+
+
 class UserSerializer(serializers.ModelSerializer):
     url = serializers.URLField(source='get_absolute_url', read_only=True)
-    boards = serializers.SerializerMethodField()
+    boards = BoardForUserSerializer(many=True)
 
     class Meta:
         model = User
@@ -29,8 +40,21 @@ class UserSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
-        password = validated_data.pop('password')
-        instance.set_password(password)
+        password = validated_data.pop('password', None)
+        if password is not None:
+            instance.set_password(password)
+
+        new_boards = validated_data.pop('boards', {})
+        for board in new_boards:
+            if 'id' in board:
+                card_id = board.get('id')
+                board.pop('id')
+                Board.objects.update_or_create(
+                    id=card_id,
+                    defaults={'User': instance, **board},
+                )
+            else:
+                Board.objects.create(owner=instance, **board)
         instance.save()
         return instance
 
