@@ -1,7 +1,30 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
-<h1>Title: {{ board.title }}</h1>
-<p><strong>Owner:</strong> {{ board.owner }} | {{ board.owner.first_name }} {{ board.owner.last_name }}</p>
-<p><strong>Created:</strong> {{ board.created }}</p>
+<div>
+    <h1>Title: {{ board.title }}</h1>
+    <p><strong>Owner:</strong> {{ board.owner }} | {{ board.owner.first_name }} {{ board.owner.last_name }}</p>
+    <p><strong>Created:</strong> {{ board.created }}</p>
+</div>
+<div class="row">
+    {% for card in board.cards.all %}
+    <div class="col">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">{{ card.title }}</h5>
+                <p class="card-text">description:{{ card.description }}</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">deadline:{{ card.deadline }}</li>
+                    <li class="list-group-item">preliminaryTime:{{ card.preliminaryTime }}</li>
+                    <li class="list-group-item">totalTime:{{ card.totalTime }}</li>
+                    <li class="list-group-item">updated:{{ card.updated }}</li>
+                </ul>
+                <div class="card-body">
+                    <a href="#{{ card.get_absolute_url }}" class="card-link">Card link | broken</a>
+                </div>
+            </div>
+        </div>
+        <br>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

@@ -78,12 +78,13 @@ class CardSerializer(serializers.ModelSerializer):
 
 class BoardSerializer(serializers.ModelSerializer):
     url = serializers.URLField(source='get_absolute_url', read_only=True)
+    urlApi = serializers.URLField(source='get_absolute_api_url', read_only=True)
     owner = serializers.URLField(source='get_owner_absolute_url', read_only=True)
     cards = CardSerializer(required=False, many=True)
 
     class Meta:
         model = Board
-        fields = ['url', 'title', 'owner', 'created', 'cards']
+        fields = ['url', 'urlApi', 'title', 'owner', 'created', 'cards']
 
     def create(self, validated_data):
         cards_data = validated_data.pop('cards', [])

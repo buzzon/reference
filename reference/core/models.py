@@ -27,7 +27,7 @@ class Board(models.Model):
         return reverse('core:board-detail', kwargs={'slug': self.slug})
 
     def get_absolute_api_url(self):
-        return reverse('core-api:board-detail', kwargs={'slug': self.slug})
+        return reverse('core-api:board-detail', args=[str(self.id)])
 
     def get_owner_absolute_url(self):
         return self.owner.get_absolute_url()
@@ -51,6 +51,9 @@ class Card(models.Model):
         ordering = ['updated']
 
     def get_absolute_url(self):
+        return reverse('core:card-detail', args=[str(self.id)])
+
+    def get_absolute_api_url(self):
         return reverse('core-api:card-detail', args=[str(self.id)])
 
     def __str__(self):

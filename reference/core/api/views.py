@@ -41,6 +41,13 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
         return get_object_or_404(Board, slug=self.kwargs.get('slug'))
 
 
+class BoardDetailByPK(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = BoardSerializer
+
+    def get_queryset(self):
+        return Board.objects.all().filter(owner=self.request.user)
+
+
 class CardList(generics.ListCreateAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer

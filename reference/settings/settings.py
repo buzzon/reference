@@ -13,8 +13,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from rest_framework.reverse import reverse
 
 from settings.parameters import ParametersContainer
 
